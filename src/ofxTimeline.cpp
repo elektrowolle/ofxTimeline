@@ -871,6 +871,15 @@ void ofxTimeline::setDurationInFrames(int frames){
 }
 
 void ofxTimeline::setDurationInSeconds(float seconds){
+	if(seconds <= 0.){
+    	ofLogError("ofxTimeline::setDurationInSeconds") << " Duration must set a positive number";
+        return;
+    }
+
+	if(!isSetup){
+		durationInSeconds = seconds;
+		return;
+	}
 
 	bool updateInTime = inoutRange.min > 0.;
 	bool updateOutTime = inoutRange.max < 1.;
@@ -878,13 +887,8 @@ void ofxTimeline::setDurationInSeconds(float seconds){
 	float inTimeSeconds  = getInTimeInSeconds();
 	float outTimeSeconds = getOutTimeInSeconds();
 	
-	if(seconds <= 0.){
-    	ofLogError("ofxTimeline::setDurationInSeconds") << " Duration must set a positive number";
-        return;
-    }
 	//verify no elements are being truncated
 	durationInSeconds = MAX(seconds, getLatestTime()/1000.0);
-	
 
 	if(updateInTime){
 		setInPointAtSeconds(inTimeSeconds);
