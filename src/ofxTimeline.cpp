@@ -1217,7 +1217,7 @@ void ofxTimeline::mouseDragged(ofMouseEventArgs& args){
     long millis = screenXToMillis(args.x);
     
     if(modalTrack != NULL){
-    	modalTrack->mouseDragged(args, false);
+    	modalTrack->mouseDragged(args, millis);
         return;
     }
     
