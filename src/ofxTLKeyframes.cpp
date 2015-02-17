@@ -77,6 +77,7 @@ void ofxTLKeyframes::recomputePreviews(){
 
 	ofVec2f lastPoint;
 	keyPoints.clear();
+	cashedKeyFrames.clear();
 	for(int i = 0; i < keyframes.size(); i++){
 		if(!isKeyframeIsInBounds(keyframes[i])){
 			continue;
@@ -84,6 +85,7 @@ void ofxTLKeyframes::recomputePreviews(){
 		ofVec2f screenpoint = screenPositionForKeyframe(keyframes[i]);
 		if(lastPoint.squareDistance(screenpoint) > 5*5){
 			keyPoints.push_back(screenpoint);
+			cashedKeyFrames.push_back(keyframes[i]);
 		}
 		
 		lastPoint = screenpoint;

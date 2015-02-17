@@ -126,6 +126,7 @@ class ofxTLKeyframes : public ofxTLTrack
 	//cached previews for fast drawing of large timelines
 	ofPolyline preview;
 	vector<ofVec2f> keyPoints;
+	vector<ofxTLKeyframe*> cashedKeyFrames;
 	
 	virtual void recomputePreviews();
 	bool shouldRecomputePreviews;
