@@ -1737,7 +1737,7 @@ float ofxTimeline::getValueAtPercent(string trackName, float atPercent){
 		ofLogError("ofxTimeline -- Couldn't find track " + trackName);
 		return 0.0;
 	}
-	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
+	ofxTLKeyframes* curves = (ofxTLKeyframes*)trackNameToPage[trackName]->getTrack(trackName);
 	return curves->getValueAtTimeInMillis(atPercent*durationInSeconds*1000);
 }
 
@@ -1746,7 +1746,7 @@ float ofxTimeline::getValue(string trackName, float atTime){
 		ofLogError("ofxTimeline -- Couldn't find track " + trackName);
 		return 0.0;
 	}
-	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
+	ofxTLKeyframes* curves = (ofxTLKeyframes*)trackNameToPage[trackName]->getTrack(trackName);
 	return curves->getValueAtTimeInMillis(atTime*1000);
 }
 
