@@ -86,18 +86,18 @@ class ofOpenALSoundPlayer_TimelineAdditions : public ofBaseSoundPlayer, public o
 		void setMultiPlay(bool bMp);
 		void setPosition(float pct); // 0 = start, 1 = end;
 	    void setPositionMS(int ms);
-    
-		float getPosition();
-	    int getPositionMS();
-		bool getIsPlaying();
-		float getSpeed();
-		float getPan();
-	    float getVolume();
-	    bool isLoaded();
+
+		float getPosition() const;
+	    int getPositionMS() const;
+		bool getIsPlaying() const;
+		float getSpeed() const;
+		float getPan() const;
+	    float getVolume() const;
+	    bool isLoaded() const;
 		bool getIsPaused();
 		float getDuration();
 		int getNumChannels();
-    
+
 		static void initialize();
 		static void close();
 
@@ -116,14 +116,14 @@ class ofOpenALSoundPlayer_TimelineAdditions : public ofBaseSoundPlayer, public o
 
 		static ALCcontext * alContext;
 	protected:
-		
+
         void threadedFunction();
 
 		void ofOpenALSoundUpdate();
 		void update(ofEventArgs & args);
 		void initFFT(int bands);
 		float *getCurrentBufferSum(int size);
-    
+
 		void createWindow(int size);
 		void runWindow(vector<float> & signal);
 		void initSystemFFT(int bands);
@@ -151,11 +151,11 @@ class ofOpenALSoundPlayer_TimelineAdditions : public ofBaseSoundPlayer, public o
 
 		static ALCdevice * alDevice;
 
-	
+
 		vector<float> window;
 		float windowSum;
         float bandWidth;
-    
+
 		int channels;
 		float duration; //in secs
 		int samplerate;
@@ -195,9 +195,9 @@ class ofOpenALSoundPlayer_TimelineAdditions : public ofBaseSoundPlayer, public o
 		vector<short> buffer;
 		vector<float> fftAuxBuffer;
         float curMaxAverage;
-    
+
 		bool stream_end;
-    
+
         bool timeSet;
     float justSetTime;
 };
