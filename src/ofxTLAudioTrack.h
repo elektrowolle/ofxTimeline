@@ -38,25 +38,25 @@
 
 class ofxTLAudioTrack : public ofxTLTrack
 {
-  public:
+  public:	
 	ofxTLAudioTrack();
 	virtual ~ofxTLAudioTrack();
-
+	
 	virtual void draw();
 	virtual void update();
-
+	
 	virtual bool loadSoundfile(string filepath);
 	virtual bool isSoundLoaded();
 	virtual float getDuration(); //in seconds
 	virtual string getSoundfilePath();
-
+	
 	virtual bool mousePressed(ofMouseEventArgs& args, long millis);
 	virtual void mouseMoved(ofMouseEventArgs& args, long millis);
 	virtual void mouseDragged(ofMouseEventArgs& args, long millis);
 	virtual void mouseReleased(ofMouseEventArgs& args, long millis);
-
+	
 	virtual void keyPressed(ofKeyEventArgs& args);
-
+	
 	//this will play the timeline along to the audio
     virtual bool togglePlay();
     virtual void play();
@@ -65,7 +65,7 @@ class ofxTLAudioTrack : public ofxTLTrack
 
     virtual void setFFTDampening(float dampening);
     virtual float getFFTDampening();
-
+    
     virtual void setUseFFTEnvelope(bool useEnveolope);
     virtual bool getUseFFTEnvelope();
 
@@ -73,25 +73,25 @@ class ofxTLAudioTrack : public ofxTLTrack
 	virtual void zoomStarted(ofxTLZoomEventArgs& args);
 	virtual void zoomDragged(ofxTLZoomEventArgs& args);
 	virtual void zoomEnded(ofxTLZoomEventArgs& args);
-
+	
     virtual void playbackStarted(ofxTLPlaybackEventArgs& args);
 	virtual void playbackLooped(ofxTLPlaybackEventArgs& args);
 	virtual void playbackEnded(ofxTLPlaybackEventArgs& args);
 
 	virtual void boundsChanged(ofEventArgs& args);
-
+	
 	virtual void setSpeed(float speed);
     virtual float getSpeed();
 	virtual void setVolume(float volume);
 	virtual void setPan(float pan);
-
+    
 	virtual string getTrackType();
 
     //FFT for audio reactive
     void setFFTLogAverages(int minBandwidth = 88, int bandsPerOctave = 20);
     int getLogAverageMinBandwidth();
     int getLogAverageBandsPerOctave();
-
+    
     int getFFTSize();
 	vector<float>& getFFT();
     int getBufferSize();
@@ -99,7 +99,7 @@ class ofxTLAudioTrack : public ofxTLTrack
     vector<float> &getBufferForFrame(int _frame, int _size = 512);
 
   protected:
-
+	
 	float positionForSecond(float second);
     bool soundLoaded;
 	bool shouldRecomputePreview;
@@ -112,11 +112,11 @@ class ofxTLAudioTrack : public ofxTLTrack
 
     vector<float> dampened;
     vector<float> buffered;
-
+    
 	float lastPercent;
-
+    
 //	virtual void update(ofEventArgs& args);
-	ofOpenALSoundPlayer_TimelineAdditions *player;
+	ofOpenALSoundPlayer_TimelineAdditions player;
 	ofRange computedZoomBounds;
 	float maxBinReceived;
     float dampening;
