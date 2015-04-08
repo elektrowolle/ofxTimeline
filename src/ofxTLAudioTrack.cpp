@@ -49,17 +49,17 @@ ofxTLAudioTrack::~ofxTLAudioTrack(){
 
 bool ofxTLAudioTrack::loadSoundfile(string filepath){
 	soundLoaded = false;
-	if(player->loadSound(filepath, false)){
+	if(player.loadSound(filepath, false)){
     	soundLoaded = true;
 		soundFilePath = filepath;
 		shouldRecomputePreview = true;
-        player->getSpectrum(defaultSpectrumBandwidth);
+        player.getSpectrum(defaultSpectrumBandwidth);
         setFFTLogAverages();
-        averageSize = player->getAverages().size();
+        averageSize = player.getAverages().size();
     }
 	return soundLoaded;
 }
-
+ 
 string ofxTLAudioTrack::getSoundfilePath(){
 	return soundFilePath;
 }
@@ -69,47 +69,47 @@ bool ofxTLAudioTrack::isSoundLoaded(){
 }
 
 float ofxTLAudioTrack::getDuration(){
-	return player->getDuration();
+	return player.getDuration();
 }
 
 void ofxTLAudioTrack::update(){
 	if(this == timeline->getTimecontrolTrack()){
 		if(getIsPlaying()){
-			if(player->getPosition() < lastPercent){
+			if(player.getPosition() < lastPercent){
 				ofxTLPlaybackEventArgs args = timeline->createPlaybackEvent();
 				ofNotifyEvent(events().playbackLooped, args);
 			}
-			lastPercent = player->getPosition();
+			lastPercent = player.getPosition();			
 			//currently only supports timelines with duration == duration of player
 			if(lastPercent < timeline->getInOutRange().min){
 
-				player->setPosition( positionForSecond(timeline->getInTimeInSeconds())+.001 );
+				player.setPosition( positionForSecond(timeline->getInTimeInSeconds())+.001 );
 			}
 			else if(lastPercent > timeline->getInOutRange().max){
 				if(timeline->getLoopType() == OF_LOOP_NONE){
-					player->setPosition( positionForSecond(timeline->getInTimeInSeconds()));
+					player.setPosition( positionForSecond(timeline->getInTimeInSeconds()));
 					stop();
 				}
 				else{
-					player->setPosition( positionForSecond(timeline->getInTimeInSeconds()));
+					player.setPosition( positionForSecond(timeline->getInTimeInSeconds()));
 				}
 			}
-
-			timeline->setCurrentTimeSeconds(player->getPosition() * player->getDuration());
+			
+			timeline->setCurrentTimeSeconds(player.getPosition() * player.getDuration());
 		}
 	}
 }
-
+ 
 void ofxTLAudioTrack::draw(){
-
-	if(!soundLoaded || player->getBuffer().size() == 0){
+	
+	if(!soundLoaded || player.getBuffer().size() == 0){
 		ofPushStyle();
 		ofSetColor(timeline->getColors().disabledColor);
 		ofRectangle(bounds);
 		ofPopStyle();
 		return;
 	}
-
+		
 	if(shouldRecomputePreview || viewIsDirty){
 //		cout << "recomputing waveform for audio file " << getSoundfilePath() << endl;
 		recomputePreview();
@@ -118,7 +118,7 @@ void ofxTLAudioTrack::draw(){
     ofPushStyle();
     ofSetColor(timeline->getColors().keyColor);
     ofNoFill();
-
+    
     for(int i = 0; i < previews.size(); i++){
         ofPushMatrix();
         ofTranslate( normalizedXtoScreenX(computedZoomBounds.min, zoomBounds) - normalizedXtoScreenX(zoomBounds.min, zoomBounds), 0, 0);
@@ -127,15 +127,15 @@ void ofxTLAudioTrack::draw(){
         ofPopMatrix();
     }
     ofPopStyle();
+	
 
-
-
+    
     ofPushStyle();
-
+    
     //will refresh fft bins for other calls too
     vector<float>& bins = getFFT();
     float binWidth = bounds.width / bins.size();
-
+    
     ofFill();
     ofSetColor(timeline->getColors().disabledColor, 120);
     for(int i = 0; i < bins.size(); i++){
@@ -143,43 +143,43 @@ void ofxTLAudioTrack::draw(){
         float y = bounds.y + bounds.height - height;
         ofRect(i*binWidth, y, binWidth, height);
     }
-
+    
     ofPopStyle();
 }
 
 float ofxTLAudioTrack::positionForSecond(float second){
 	if(isSoundLoaded()){
-		return ofMap(second, 0, player->getDuration(), 0, 1.0, true);
+		return ofMap(second, 0, player.getDuration(), 0, 1.0, true);
 	}
 	return 0;
 }
 
 void ofxTLAudioTrack::recomputePreview(){
-
+	
 	previews.clear();
-
+	
 //	cout << "recomputing view with zoom bounds of " << zoomBounds << endl;
-
-	float normalizationRatio = timeline->getDurationInSeconds() / player->getDuration(); //need to figure this out for framebased...but for now we are doing time based
-	float trackHeight = bounds.height/(1+player->getNumChannels());
-	int numSamples = player->getBuffer().size() / player->getNumChannels();
+	
+	float normalizationRatio = timeline->getDurationInSeconds() / player.getDuration(); //need to figure this out for framebased...but for now we are doing time based
+	float trackHeight = bounds.height/(1+player.getNumChannels());
+	int numSamples = player.getBuffer().size() / player.getNumChannels();
 	int pixelsPerSample = numSamples / bounds.width;
-	int numChannels = player->getNumChannels();
-	vector<short> & buffer  = player->getBuffer();
+	int numChannels = player.getNumChannels();
+	vector<short> & buffer  = player.getBuffer();
 
 	for(int c = 0; c < numChannels; c++){
 		ofPolyline preview;
 		int lastFrameIndex = 0;
-		preview.resize(bounds.width*2);  //Why * 2? Because there are two points per pixel, center and outside.
+		preview.resize(bounds.width*2);  //Why * 2? Because there are two points per pixel, center and outside. 
 		for(float i = bounds.x; i < bounds.x+bounds.width; i++){
 			float pointInTrack = screenXtoNormalizedX( i ) * normalizationRatio; //will scale the screenX into wave's 0-1.0
 			float trackCenter = bounds.y + trackHeight * (c+1);
-
+			
 			ofPoint * vertex = & preview.getVertices()[ (i - bounds.x) * 2];
-
+			
 			if(pointInTrack >= 0 && pointInTrack <= 1.0){
 				//draw sample at pointInTrack * waveDuration;
-				int frameIndex = pointInTrack * numSamples;
+				int frameIndex = pointInTrack * numSamples;					
 				float losample = 0;
 				float hisample = 0;
 				for(int f = lastFrameIndex; f < frameIndex; f++){
@@ -192,7 +192,7 @@ void ofxTLAudioTrack::recomputePreview(){
 						hisample = subpixelSample;
 					}
 				}
-
+				
 				if(losample == 0 && hisample == 0){
 					//preview.addVertex(i, trackCenter);
 					vertex->x = i;
@@ -214,7 +214,7 @@ void ofxTLAudioTrack::recomputePreview(){
 						vertex++;
 					}
 				}
-
+				
 				while (vertex < & preview.getVertices()[ (i - bounds.x) * 2] + 2) {
 					*vertex = *(vertex-1);
 					vertex++;
@@ -271,19 +271,19 @@ void ofxTLAudioTrack::boundsChanged(ofEventArgs& args){
 
 void ofxTLAudioTrack::play(){
 
-	if(!player->getIsPlaying()){
-
+	if(!player.getIsPlaying()){
+        
 //		lastPercent = MIN(timeline->getPercentComplete() * timeline->getDurationInSeconds() / player.getDuration(), 1.0);
-		player->setLoop(timeline->getLoopType() == OF_LOOP_NORMAL);
-		player->play();
+		player.setLoop(timeline->getLoopType() == OF_LOOP_NORMAL);
+		player.play();
 		if(timeline->getTimecontrolTrack() == this){
-			if(player->getPosition() == 1.0 || timeline->getPercentComplete() > .99){
+			if(player.getPosition() == 1.0 || timeline->getPercentComplete() > .99){
                 timeline->setCurrentTimeSeconds(0);
             }
-
-            player->setPosition(positionForSecond(timeline->getCurrentTime()));
+            
+            player.setPosition(positionForSecond(timeline->getCurrentTime()));
             //cout << " setting time to  " << positionForSecond(timeline->getCurrentTime()) << " actual " << player.getPosition() << endl;
-
+            
 			ofxTLPlaybackEventArgs args = timeline->createPlaybackEvent();
 			ofNotifyEvent(events().playbackStarted, args);
 		}
@@ -291,9 +291,9 @@ void ofxTLAudioTrack::play(){
 }
 
 void ofxTLAudioTrack::stop(){
-	if(player->getIsPlaying()){
-
-		player->setPaused(true);
+	if(player.getIsPlaying()){
+		
+		player.setPaused(true);
 
 		if(timeline->getTimecontrolTrack() == this){
 			ofxTLPlaybackEventArgs args = timeline->createPlaybackEvent();
@@ -308,24 +308,24 @@ void ofxTLAudioTrack::playbackStarted(ofxTLPlaybackEventArgs& args){
 		//player.setPosition(timeline->getPercentComplete());
 		float position = positionForSecond(timeline->getCurrentTime());
 		if(position < 1.0){
-			player->play();
+			player.play();
 		}
-		player->setPosition( position );
+		player.setPosition( position );
 	}
 }
 
 void ofxTLAudioTrack::playbackLooped(ofxTLPlaybackEventArgs& args){
 	if(isSoundLoaded() && this != timeline->getTimecontrolTrack()){
-		if(!player->getIsPlaying()){
-			player->play();
+		if(!player.getIsPlaying()){
+			player.play();
 		}
-		player->setPosition( positionForSecond(timeline->getCurrentTime()) );
+		player.setPosition( positionForSecond(timeline->getCurrentTime()) );
 	}
 }
 
 void ofxTLAudioTrack::playbackEnded(ofxTLPlaybackEventArgs& args){
 	if(isSoundLoaded() && this != timeline->getTimecontrolTrack()){
-		player->stop();
+		player.stop();
 	}
 }
 
@@ -340,23 +340,23 @@ bool ofxTLAudioTrack::togglePlay(){
 }
 
 bool ofxTLAudioTrack::getIsPlaying(){
-    return player->getIsPlaying();
+    return player.getIsPlaying();
 }
 
 void ofxTLAudioTrack::setSpeed(float speed){
-    player->setSpeed(speed);
+    player.setSpeed(speed);
 }
 
 float ofxTLAudioTrack::getSpeed(){
-    return player->getSpeed();
+    return player.getSpeed();
 }
 
 void ofxTLAudioTrack::setVolume(float volume){
-    player->setVolume(volume);
+    player.setVolume(volume);
 }
 
 void ofxTLAudioTrack::setPan(float pan){
-    player->setPan(pan);
+    player.setPan(pan);
 }
 
 void ofxTLAudioTrack::setUseFFTEnvelope(bool useFFTEnveolope){
@@ -377,16 +377,16 @@ float ofxTLAudioTrack::getFFTDampening(){
 
 void ofxTLAudioTrack::setFFTLogAverages(int minBandwidth, int bandsPerOctave){
     if(isSoundLoaded()){
-        player->setLogAverages(minBandwidth, bandsPerOctave);
+        player.setLogAverages(minBandwidth, bandsPerOctave);
     }
 }
 
 int ofxTLAudioTrack::getLogAverageMinBandwidth(){
-    return player->getMinBandwidth();
+    return player.getMinBandwidth();
 }
 
 int ofxTLAudioTrack::getLogAverageBandsPerOctave(){
-    return player->getBandsPerOctave();
+    return player.getBandsPerOctave();
 }
 
 int ofxTLAudioTrack::getFFTSize(){
@@ -396,15 +396,15 @@ int ofxTLAudioTrack::getFFTSize(){
 //envelope and dampening approach from Marius Watz
 //http://workshop.evolutionzone.com/2012/08/30/workshops-sept-89-sound-responsive-visuals-3d-printing-and-parametric-modeling/
 vector<float>& ofxTLAudioTrack::getFFT(){
-	float fftPosition = player->getPosition();
+	float fftPosition = player.getPosition();
 	if(isSoundLoaded() && lastFFTPosition != fftPosition){
 
-        vector<float>& fftAverages = player->getAverages();
+        vector<float>& fftAverages = player.getAverages();
         averageSize = fftAverages.size();
         if(envelope.size() != averageSize){
             generateEnvelope(averageSize);
         }
-
+        
         if(dampened.size() != averageSize){
             dampened.clear();
             dampened.resize(averageSize);
@@ -415,7 +415,7 @@ vector<float>& ofxTLAudioTrack::getFFT(){
                 fftAverages[i] *= envelope[i];
             }
         }
-
+        
         float max = 0;
         for(int i = 0; i < fftAverages.size(); i++){
             max = MAX(max, fftAverages[i]);
@@ -425,26 +425,26 @@ vector<float>& ofxTLAudioTrack::getFFT(){
                 fftAverages[i] = ofMap(fftAverages[i],0, max, 0, 1.0);
             }
         }
-
+ 
         for(int i = 0; i < averageSize; i++) {
             dampened[i] = (fftAverages[i] * dampening) + dampened[i]*(1-dampening);
         }
-
+        
         //normalizer hack
         lastFFTPosition = fftPosition;
 	}
-
+    
 	return dampened;
 }
 
 int ofxTLAudioTrack::getBufferSize()
 {
-    return player->getBuffer().size() / player->getNumChannels();
+    return player.getBuffer().size() / player.getNumChannels();
 }
 
 vector<float>& ofxTLAudioTrack::getCurrentBuffer(int _size)
 {
-    buffered = player->getCurrentBuffer(_size);
+    buffered = player.getCurrentBuffer(_size);
     return buffered;
 }
 
@@ -453,7 +453,7 @@ vector<float>& ofxTLAudioTrack::getBufferForFrame(int _frame, int _size)
     if(_frame != lastBufferPosition)
     {
         lastBufferPosition = _frame;
-        buffered = player->getBufferForFrame(_frame, timeline->getTimecode().getFPS(), _size);
+        buffered = player.getBufferForFrame(_frame, timeline->getTimecode().getFPS(), _size);
         return buffered;
     }
     return buffered;
@@ -461,7 +461,7 @@ vector<float>& ofxTLAudioTrack::getBufferForFrame(int _frame, int _size)
 
 void ofxTLAudioTrack::generateEnvelope(int size){
     envelope.clear();
-
+    
     for(int i = 0; i < size; i++) {
         envelope.push_back(ofBezierPoint(ofPoint(0.05,0),
                                          ofPoint(0.1, 0),
@@ -472,7 +472,7 @@ void ofxTLAudioTrack::generateEnvelope(int size){
 }
 
 string ofxTLAudioTrack::getTrackType(){
-    return "Audio";
+    return "Audio";    
 }
 
-
+   
