@@ -101,7 +101,7 @@ class ofxTLColorTrack : public ofxTLKeyframes {
 	ofColor samplePaletteAtPosition(ofVec2f position);
 	
 	ofColor defaultColor;
-	
+
 };
 
 

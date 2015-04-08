@@ -73,8 +73,8 @@ class ofOpenALSoundPlayer_TimelineAdditions : public ofBaseSoundPlayer, public o
 		ofOpenALSoundPlayer_TimelineAdditions();
 		virtual ~ofOpenALSoundPlayer_TimelineAdditions();
 
-		bool loadSound(string fileName, bool stream = false);
-		void unloadSound();
+		bool load(string fileName, bool stream = false);
+		void unload();
 		void play();
 		void stop();
 
@@ -87,13 +87,13 @@ class ofOpenALSoundPlayer_TimelineAdditions : public ofBaseSoundPlayer, public o
 		void setPosition(float pct); // 0 = start, 1 = end;
 	    void setPositionMS(int ms);
     
-		float getPosition();
-	    int getPositionMS();
-		bool getIsPlaying();
-		float getSpeed();
-		float getPan();
-	    float getVolume();
-	    bool isLoaded();
+		float getPosition() const;
+	    int getPositionMS() const;
+		bool isPlaying() const;
+		float getSpeed() const;
+		float getPan() const;
+	    float getVolume() const;
+	    bool isLoaded() const;
 		bool getIsPaused();
 		float getDuration();
 		int getNumChannels();

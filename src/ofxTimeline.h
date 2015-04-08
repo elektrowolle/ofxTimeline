@@ -70,6 +70,8 @@
 #include "ofxTLColors.h"
 #include "ofxTLLFO.h"
 
+#define TIMELINE_AUDIO_INCLUDED
+
 #ifdef TIMELINE_VIDEO_INCLUDED
 #include "ofxTLVideoTrack.h"
 #endif
