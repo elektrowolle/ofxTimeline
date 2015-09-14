@@ -70,15 +70,14 @@
 #include "ofxTLColors.h"
 #include "ofxTLLFO.h"
 
+#ifndef NOAUDIO
 #define TIMELINE_AUDIO_INCLUDED
+#endif
 
 #ifdef TIMELINE_VIDEO_INCLUDED
 #include "ofxTLVideoTrack.h"
 #endif
 
-#ifdef TIMELINE_AUDIO_INCLUDED
-#include "ofxTLAudioTrack.h"
-#endif
 
 
 typedef struct {
@@ -397,13 +396,13 @@ class ofxTimeline : ofThread {
     ofPtr<ofVideoPlayer> getVideoPlayer(string videoTrackName);
 	#endif
     
-	#ifdef TIMELINE_AUDIO_INCLUDED
-    //Audio tracks only work with PCM Wav or Aiff file
-    ofxTLAudioTrack* addAudioTrack(string trackName);
-    ofxTLAudioTrack* addAudioTrackWithPath(string audioPath);
-    ofxTLAudioTrack* addAudioTrack(string name, string audioPath);
-    ofxTLAudioTrack* getAudioTrack(string audioTrackName);
-	#endif
+//	#ifdef TIMELINE_AUDIO_INCLUDED
+//    //Audio tracks only work with PCM Wav or Aiff file
+//    ofxTLAudioTrack* addAudioTrack(string trackName);
+//    ofxTLAudioTrack* addAudioTrackWithPath(string audioPath);
+//    ofxTLAudioTrack* addAudioTrack(string name, string audioPath);
+//    ofxTLAudioTrack* getAudioTrack(string audioTrackName);
+//	#endif
 
     //used for audio and video.
     //we punt to the track to control time.

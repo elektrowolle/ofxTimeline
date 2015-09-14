@@ -7,6 +7,8 @@
 
 #pragma once
 
+#define NOAUDIO
+
 #include "ofMain.h"
 #include "ofxTimeline.h"
 
